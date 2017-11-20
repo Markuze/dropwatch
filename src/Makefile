@@ -1,6 +1,6 @@
 all: dropwatch
-CFLAGS+=-c -g -D_GNU_SOURCE -Wall -Werror
-LDFLAGS=-lbfd -lreadline -lnl
+CFLAGS+=-c -g -D_GNU_SOURCE -Wall -Werror -I /usr/include/libnl3/
+LDFLAGS=-lbfd -lreadline -I /usr/include/libnl3/ -lnl
 OBJFILES := main.o lookup.o\
 	 lookup_bfd.o lookup_kas.o
 
