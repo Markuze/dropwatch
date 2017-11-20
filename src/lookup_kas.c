@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2009, Neil Horman <nhorman@redhat.com>
- * 
+ *
  * This program file is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; version 2 of the License.
@@ -45,8 +45,8 @@ LIST_HEAD(sym_list, symbol_entry);
 
 /*
  * This is our cache of symbols that we've previously looked up
- */ 
-static struct sym_list sym_list_head = {NULL}; 
+ */
+static struct sym_list sym_list_head = {NULL};
 
 
 static int lookup_kas_cache( __u64 pc, struct loc_result *location)
@@ -86,7 +86,8 @@ static int lookup_kas_proc(__u64 pc, struct loc_result *location)
 	FILE *pf;
 	__u64 ppc;
 	__u64 uppc, ulpc, uipc;
-	char *name, *last_name;
+	char *last_name;
+	char name[512];
 
 	pf = fopen("/proc/kallsyms", "r");
 
@@ -96,12 +97,12 @@ static int lookup_kas_proc(__u64 pc, struct loc_result *location)
 	last_name = NULL;
 	uipc = pc;
 	while (!feof(pf)) {
-		/* 
+		/*
 		 * Each line of /proc/kallsyms is formatteded as:
 		 *  - "%pK %c %s\n" (for kernel internal symbols), or
 		 *  - "%pK %c %s\t[%s]\n" (for module-provided symbols)
 		 */
-		fscanf(pf, "%llx %*s %as [ %*[^]] ]", &ppc, &name);
+		fscanf(pf, "%llx %*s %s [ %*[^]] ]", &ppc, name);
 		uppc = (__u64)ppc;
 		if ((uipc >= ulpc) &&
 		    (uipc < uppc)) {
@@ -113,9 +114,9 @@ static int lookup_kas_proc(__u64 pc, struct loc_result *location)
  			 */
 			kas_add_cache(ulpc, uppc-1, last_name);
 			fclose(pf);
-			free(name);
+			//free(name);
 			return lookup_kas_cache(pc, location);
-		} 
+		}
 
 		/*
  		 * Advance all our state holders
@@ -132,7 +133,7 @@ static int lookup_kas_proc(__u64 pc, struct loc_result *location)
 static int lookup_kas_init(void)
 {
 	printf("Initalizing kallsyms db\n");
-	
+
 	return 0;
 }
 
